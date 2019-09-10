@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+
+<!--
+- allow 4 different options for voting
+- do average time to vote in total
+- votes by device (aka split these into 2 different graphs)
+- for the map option - are we able to do a heat map vs. just individual pins?
+-->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Keentroversy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+     <link rel="shortcut icon" href="https://keen.io/assets/images/favicon.ico">
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-analysis@3"></script>
+    <link href="https://cdn.jsdelivr.net/npm/keen-dataviz@3/dist/keen-dataviz.min.css" rel="stylesheet" />
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-dataviz@3/dist/keen-dataviz.min.js"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
+    <!-- Mapbox Dependencies -->
+    <link href="https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.css" rel="stylesheet" />
+    <script src="https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.js" type="text/javascript"></script>
+    <link href="sfmta-demo.css" rel="stylesheet" />
+    <!--<script type="text/javascript" src="sfmta-demo.js"></script> -->
+
+</head>
+
+<body>
+    <section class="hero is-info is-medium is-bold">
+        <div class="hero-head">
+            <nav class="navbar">
+                <div class="container">
+                    <div class="navbar-brand">
+                        <a class="navbar-item" href="https://keen.io">
+                            <svg class="keen-logo mt1" height="38" width="172" xmlns="http://www.w3.org/2000/svg"
+                                version="1.1" x="0px" y="0px" viewBox="0 0 594 128" enable-background="new 0 0 594 128"
+                                xml:space="preserve">
+                                <g class="icon">
+                                    <polygon fill="#fe6672" points="59.811,73.135 66.859,85.34 49.275,115.863 140.807,115.863 147.814,128 28.045,128"></polygon>
+                                    <polygon fill="#00cfbb" points="59.873,24.297 91.504,79.242 77.413,79.242 59.826,48.781 13.958,128 0,128"></polygon>
+                                    <polygon fill="#00bbde" points="133.769,103.674 70.364,103.674 77.418,91.432 112.586,91.432 66.915,12.1 73.9,0"></polygon>
+                                </g>
+                                <path class="text-2" fill="#FFFFFF" d="M246.12 94.163L216.29 57.373l27.704-27.484c1.199-1.195 1.782-2.475 1.782-3.91 0-2.906-2.496-5.453-5.341-5.453 -1.869 0-3.128 0.887-4.262 1.896l-43.89 44.996V26.094c0-3.07-2.498-5.568-5.568-5.568 -2.96 0-5.461 2.549-5.461 5.568v72.01c0 3.02 2.501 5.57 5.461 5.57 3.07 0 5.568-2.498 5.568-5.57V81.145l16.181-16.178 29.093 36.231c1.15 1.643 2.655 2.477 4.474 2.477 3.021 0 5.573-2.551 5.573-5.57C247.604 96.301 246.896 95.151 246.12 94.163zM309.211 71.702c0-15.379-9.767-30.948-28.434-30.948 -16.456 0-29.348 13.941-29.348 31.743v0.23c0 18.1 13.108 31.748 30.49 31.748 9.265 0 16.353-2.836 22.95-9.162 1.104-0.967 1.713-2.248 1.713-3.609 0-2.631-2.192-4.771-4.887-4.771 -1.466 0-2.503 0.719-3.195 1.293 -4.886 4.5-10.083 6.596-16.354 6.596 -10.378 0-18.167-7.188-19.675-18.006h41.627C306.917 76.815 309.211 74.52 309.211 71.702zM280.55 50.182c11.501 0 16.667 9.162 17.751 18.117h-35.831C263.956 57.574 271.266 50.182 280.55 50.182zM374.018 71.702c0-15.379-9.767-30.948-28.434-30.948 -16.454 0-29.344 13.941-29.344 31.743v0.23c0 18.1 13.107 31.748 30.486 31.748 9.263 0 16.351-2.836 22.95-9.164 1.103-0.965 1.71-2.246 1.71-3.607 0-2.631-2.193-4.771-4.889-4.771 -1.464 0-2.501 0.719-3.193 1.293 -4.886 4.5-10.082 6.596-16.352 6.596 -10.374 0-18.163-7.189-19.677-18.006h41.626C371.723 76.815 374.018 74.52 374.018 71.702zM345.357 50.182c11.497 0 16.662 9.162 17.749 18.117h-35.83C328.762 57.574 336.072 50.182 345.357 50.182zM414.734 40.754c-8.037 0-14.492 3.127-19.233 9.309V46.9c0-3.062-2.396-5.461-5.455-5.461 -2.945 0-5.342 2.449-5.342 5.461v51.319c0 3.059 2.396 5.455 5.455 5.455 3.045 0 5.342-2.346 5.342-5.455V68.271c0-10.312 6.874-17.514 16.717-17.514 9.606 0 15.342 6.291 15.342 16.826v30.635c0 3.059 2.398 5.455 5.461 5.455 2.999 0 5.348-2.396 5.348-5.455V65.414C438.369 50.434 429.092 40.754 414.734 40.754z"></path>
+                            </svg>
+                        </a>
+                        <span class="navbar-burger burger" data-target="navbarMenu">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </span>
+                    </div>
+                    <div id="navbarMenu" class="navbar-menu">
+                        <div class="navbar-end">
+                            <a class="navbar-item" href="https://keen.io">Keen Home</a>
+                            <span class="navbar-item">
+                                <a class="button is-white is-outlined" href="https://keen.io/home">
+                                    <span title="Log into keen">Log In</span>
+                                </a>
+                            </span>
+                            <span class="navbar-item">
+                                <a class="button is-white" href="https://keen.io/signup?source=Keentroversy">
+                                    <span title="Sign up for keen">Sign Up</span>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <h1 class="title">
+                    Teresas 4 options counter.
+                </h1>
+                <h2 class="subtitle">
+                    This is a test page of teresas 4 option counter stuff 
+                </h2>
+            </div>
+        </div>
+    </section>
+    <div class="box cta">
+        <p class="has-text-centered">
+          This counter was created in less than 15 minutes with Keen. <a href="https://keen.io/signup?source=Keentroversy">Sign up</a> today to create customer-facing metrics fast.
+        </p>
+    </div>
+    <section class="container">
+        <div class="columns features">
+            <div class="column is-3">
+                <div class="card is-shady">
+                    <div class="card-content has-text-centered">
+                  
+                       <a href="http://127.0.0.1:5500/tester.html?first_option=true"> 
+                        <span class="icon has-text-success">
+                            <i class="fa fa-check-circle fa-4x"></i>
+                        </span> 
+                        </a>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <p id="option1"></p>
+                        </div>
+                    <div>
+                        <p>Teresa Option #1</p>
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-3">
+                <div class="card is-shady">
+                    <div class="card-content has-text-centered">
+                       <a href="http://127.0.0.1:5500/tester.html?second_option=true"> 
+                           <span class="icon has-text-warning">
+                           <i class="fa fa-times-circle fa-4x"></i>
+                        </span>
+                        </a>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <p id="option2"></p>
+                        </div>
+                     <div>
+                        <p>Teresa Option #2 !</p>
+                        
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-3">
+                    <div class="card is-shady">
+                        <div class="card-content has-text-centered">
+                            <a href="http://127.0.0.1:5500/tester.html?third_option=true"> 
+                             <span class="icon has-text-danger">
+                                <i class="fa fa-times-circle fa-4x"></i>
+                            </span>
+                            </a>
+                        </div>
+                        <div class="card-content">
+                            <div class="content">
+                                <p id="option3"></p>
+                            </div>
+                        <div>
+                            <p>Teresa Option #3 !</p>
+                            
+                        </div>
+                        </div>
+                    </div>
+            </div>
+           <div class="column is-3">
+                    <div class="card is-shady">
+                        <div class="card-content has-text-centered">
+                            <a href="http://127.0.0.1:5500/tester.html?fourth_option=true"> 
+                             <span class="icon has-text-danger">
+                                <i class="fa fa-times-circle fa-4x"></i>
+                            </span>
+                            </a>
+                        </div>
+                        <div class="card-content">
+                            <div class="content">
+                                <p id="option4"></p>
+                            </div>
+                        <div>
+                            <p>Teresa Option #4 !</p>
+                            
+                        </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </section>
+    <section class="container">
+        <div class="columns features">
+            <div class="column is-6">
+                <div class="card is-shady">
+                    <div class="card-content has-text-centered">
+                        <p>Current Votes</p>
+                    </div>
+                    <div class="card-content">
+                        <p id="current_votes"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-6">
+                <div class="card is-shady">
+                    <div class="card-content has-text-centered">
+                        <p>Device Type</p>
+                    </div>
+                    <div class="card-content">
+                        <p id="device_type"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="container">
+        <div class="columns features">
+            <div class="column is-12">
+                <div class="card-content has-text-centered">
+                    <p>Locations</p>
+                </div>
+                <div class="card-content">
+                    <p id='map'></p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        //setup basic gdpr friendly page tracking
+        const trackingClient = new KeenTracking({
+            projectId: '5c4b4954c9e77c0001edb25f',
+            writeKey: '7B6FFCAE7FEB93CB587413945BB4EE2E11F1E9A9E3D7EABD42F9C2E9EB22BD3625004E3723F50F970E862F6125CF06AEC1DB1DD7404ABD125C684DFEFF21E205F4F388BEF202125FADE21D10F309EF26933DC900B71FF565447DD2EED242CDDF'
+        })
+
+        var keentroversyId = "TechDaySept2019Test" 
+        var oneTitle = "First Option"
+        var firstUrlArg = "/tester.html?first_option=true"
+        var twoTitle = "Second Option"
+        var secondUrlArg = "/tester.html?second_option=true"
+        var threeTitle = "a different title"
+        var thirdUrlArg = "/tester.html?third_option=true"
+        var fourTitle = "Fourth Option"
+        var fourthUrlArg = "/tester.html?fourth_option=true"
+
+        /* you shouldn't have to edit anything below here */
+
+        trackingClient.extendEvents(function () {
+            return {
+                "keentroversyId": keentroversyId
+            };
+        });
+
+        trackingClient.initAutoTracking({
+            recordScrollState: false, // see how far people scrolled
+            recordClicks: true, // record clicks on A links
+            recordClicksPositionPointer: true, // record pointer position for clicks
+            recordPageViewsOnExit: true, // Let see what this does
+            // GDPR related options
+            collectIpAddress: false, // default
+            collectUuid: false, // default
+        });
+        const chart = new KeenDataviz({
+            container: '#option1', // querySelector
+            title: oneTitle
+        });
+        const chart2 = new KeenDataviz({
+            container: '#option2', // querySelector
+            title: twoTitle
+        });
+        const chart3 = new KeenDataviz({
+            container: '#option3', // querySelector
+            title: threeTitle
+        });
+        const chart4 = new KeenDataviz({
+            container: '#option4', // querySelector
+            title: fourTitle
+        });
+        const votesChart = new KeenDataviz({
+            container: '#current_votes',
+            title: "CurrentVotes",
+            type: 'area-spline'
+        });
+        const deviceType = new KeenDataviz({
+            container: '#device_type',
+            title: "DeviceType",
+            type: 'donut'
+        });
+        // Use keen-analysis.js to run a query
+        const client = new KeenAnalysis({
+            projectId: '5c4b4954c9e77c0001edb25f',
+            readKey: 'C60DB577779B643B528C4DB57953168C22D3D32709D58B6B823CE39C2E2F9885079046E28286D0A2820C9E085995F3F39C550504DA46370E1724289FB623840823822816C52AF5AD85A35F4BF9A8FFA494EE6DF5EA28BEDBA3988500A598202D'
+        });
+        client
+            .query({
+                analysis_type: 'count',
+                event_collection: 'pageviews',
+                filters: [
+                    {
+                        "operator":"contains",
+                        "property_name":"url.full",
+                        "property_value":firstUrlArg
+                    },
+                    {
+                        "operator":"eq",
+                        "property_name": "keentroversyId",
+                        "property_value": keentroversyId
+                    }
+                ],
+                timeframe: 'this_30_days'
+            })
+            .then(function (results) {
+                chart.render(results);
+            })
+            .catch(function (error) {
+                chart.message(error.message);
+            });
+        client
+            .query({
+                analysis_type: 'count',
+                event_collection: 'pageviews',
+                filters: [
+                    {
+                        "operator":"contains",
+                        "property_name":"url.full",
+                        "property_value":secondUrlArg
+                    },
+                    {
+                        "operator":"eq",
+                        "property_name": "keentroversyId",
+                        "property_value": keentroversyId
+                    }],
+                timeframe: 'this_30_days'
+            })
+            .then(function (results) {
+                chart2.render(results);
+            })
+            .catch(function (error) {
+                chart2.message(error.message);
+            });
+            client
+            .query({
+                analysis_type: 'count',
+                event_collection: 'pageviews',
+                filters: [
+                    {
+                        "operator":"contains",
+                        "property_name":"url.full",
+                        "property_value":thirdUrlArg
+                    },
+                    {
+                        "operator":"eq",
+                        "property_name": "keentroversyId",
+                        "property_value": keentroversyId
+                    }],
+                timeframe: 'this_30_days'
+            })
+            .then(function (results) {
+                chart3.render(results);
+            })
+            .catch(function (error) {
+                chart3.message(error.message);
+            });
+            client
+            .query({
+                analysis_type: 'count',
+                event_collection: 'pageviews',
+                filters: [
+                    {
+                        "operator":"contains",
+                        "property_name":"url.full",
+                        "property_value":fourthUrlArg
+                    },
+                    {
+                        "operator":"eq",
+                        "property_name": "keentroversyId",
+                        "property_value": keentroversyId
+                    }],
+                timeframe: 'this_30_days'
+            })
+            .then(function (results) {
+                chart4.render(results);
+            })
+            .catch(function (error) {
+                chart4.message(error.message);
+            });
+            client
+            .query({
+                analysis_type: 'count',
+                event_collection: 'pageviews',
+                filters: [
+                    {
+                        "operator":"eq",
+                        "property_name": "keentroversyId",
+                        "property_value": keentroversyId
+                    }
+                ],
+                timeframe: 'this_8_hours',
+                interval: 'hourly'
+            })
+            .then(function (results) {
+                votesChart.render(results);
+            })
+            .catch(function (error) {
+                votesChart.message(error.message);
+            });
+            client
+            .query({
+                analysis_type: 'count',
+                event_collection: 'pageviews',
+                filters: [
+                    {
+                        "operator":"eq",
+                        "property_name": "keentroversyId",
+                        "property_value": keentroversyId
+                    }
+                ],
+                timeframe: 'this_8_hours',
+                group_by: 'tech.device.type'
+            })
+            .then(function (results) {
+                deviceType.render(results);
+            })
+            .catch(function (error) {
+                deviceType.message(error.message);
+            });
+            //possible map stuff
+            const geoProject = new KeenAnalysis({
+                projectId: '5c4b4954c9e77c0001edb25f',
+                readKey: 'C60DB577779B643B528C4DB57953168C22D3D32709D58B6B823CE39C2E2F9885079046E28286D0A2820C9E085995F3F39C550504DA46370E1724289FB623840823822816C52AF5AD85A35F4BF9A8FFA494EE6DF5EA28BEDBA3988500A598202D'
+            });
+            const DEFAULTS = {
+                coordinates: {
+                    lat: 29.4388,
+                    lng: -98.4935
+                },
+                zoom: 15
+            };
+        
+            let map,
+            markerStart = DEFAULTS.coordinates,
+            activeMapData;
+        
+            L.mapbox.accessToken = 'pk.eyJ1Ijoia2Vlbi1pbyIsImEiOiIza0xnNXBZIn0.PgzKlxBmYkOq6jBGErpqOg';
+            map = L.mapbox.map('map', 'keen-io.kae20cg0', {
+            attributionControl: true,
+            center: [markerStart.lat, markerStart.lng],
+            zoom: DEFAULTS.zoom
+            });
+            let center = map.getCenter();
+            let zoom = map.getZoom();
+        
+            z = zoom - 1;
+            if (zoom = 0) {
+            radius = false;
+            } else {
+            radius = 10000 / Math.pow(2, z);
+            }
+        
+            let geoFilter = [];
+        
+            geoFilter.push({
+            property_name: 'geo.coordinates',
+            operator: 'within',
+            property_value: {
+                coordinates: [center.lng, center.lat],
+                max_distance_miles: radius
+            }
+            });
+        
+            let geoFilter2 = [];
+            geoFilter2.push({
+            property_name: 'geo.coordinates',
+            operator: 'within',
+            property_value: {
+                coordinates: [center.lng, center.lat],
+                max_distance_miles: radius
+            }
+            });
+        
+            activeMapData = L.layerGroup().addTo(map);
+        
+            map.attributionControl.addAttribution('<a href=\'https://keen.io/\'>Custom Analytics by Keen IO</a>');
+        
+            const scoped_events = geoProject.query('select_unique', {
+            event_collection: 'pageviews',
+            target_property: 'geo.coordinates',
+            filters: geoFilter,
+            timeframe: 'this_10_hours'
+            });
+        
+            geoProject.run(scoped_events, (err, res) => {
+            Keen.utils.each(res.result, coord => {
+                var em = L.marker(new L.LatLng(coord[1], coord[0]), {
+                icon: L.mapbox.marker.icon({
+                    'marker-color': '#00bbde'
+                })
+                }).addTo(activeMapData);
+            });
+            });
+        
+            const scoped_events_2 = geoProject.query('select_unique', {
+            event_collection: 'pageviews',
+            target_property: 'geo.coordinates',
+            filters: geoFilter2,
+            timeframe: 'this_10_hours'
+            });
+        
+            geoProject.run(scoped_events_2, (err, res) => {
+            Keen.utils.each(res.result, coord => {
+                const em = L.marker(new L.LatLng(coord[1], coord[0]), {
+                icon: L.mapbox.marker.icon({
+                    'marker-color': '#fe6672'
+                })
+                }).addTo(activeMapData);
+            });
+            });
+        
+            map.on('zoomend', function (e) {
+            resize();
+            });
+            map.on('dragend', function (e) {
+            ;
+            resize();
+            });
+        
+        
+        
+            var resize = function () {
+            activeMapData.clearLayers();
+        
+            center = map.getCenter(),
+                zoom = map.getZoom();
+        
+            z = zoom - 1;
+            if (zoom = 0) {
+                radius = false;
+            } else {
+                radius = 10000 / Math.pow(2, z);
+            }
+            geoFilter.pop();
+            geoFilter.push({
+                property_name: 'geo.coordinates',
+                operator: 'within',
+                property_value: {
+                coordinates: [center.lng, center.lat],
+                max_distance_miles: radius
+                }
+            });
+        
+            geoFilter2.pop();
+            geoFilter2.push({
+                property_name: 'geo.coordinates',
+                operator: 'within',
+                property_value: {
+                coordinates: [center.lng, center.lat],
+                max_distance_miles: radius
+                }
+            });
+        
+            const scoped_events_3 = geoProject.query('select_unique', {
+                event_collection: 'pageviews',
+                target_property: 'geo.coordinates',
+                filters: geoFilter,
+                timeframe: 'this_10_hours'
+            });
+        
+            geoProject.run(scoped_events_3, (err, res) => {
+        
+                Keen.utils.each(res.result, coord => {
+                const em = L.marker(new L.LatLng(coord[1], coord[0]), {
+                    icon: L.mapbox.marker.icon({
+                    'marker-color': '#00bbde'
+                    })
+                }).addTo(activeMapData);
+                });
+            });
+        
+            const scoped_events_4 = geoProject.query('select_unique', {
+                event_collection: 'pageviews',
+                target_property: 'geo.coordinates',
+                filters: geoFilter2,
+                timeframe: 'this_10_hours'
+            });
+        
+            geoProject.run(scoped_events_4, (err, res) => {
+        
+                Keen.utils.each(res.result, coord => {
+                const em = L.marker(new L.LatLng(coord[1], coord[0]), {
+                    icon: L.mapbox.marker.icon({
+                    'marker-color': '#fe6672'
+                    })
+                }).addTo(activeMapData);
+                });
+            });
+        };
+
+    </script>
+</body>
+
+</html>
