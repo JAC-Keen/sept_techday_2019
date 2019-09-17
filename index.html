@@ -211,7 +211,10 @@
     
         trackingClient.extendEvents(function () {
             return {
-                "keentroversyId": keentroversyId
+                "keentroversyId": keentroversyId,
+                tech: {
+                device_type: md.tablet() ? 'tablet' : md.mobile() ? 'mobile' : 'desktop'
+              }
             };
         });
     
