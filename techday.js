@@ -19,7 +19,7 @@ Keen.ready(function () {
         title: 'First Vote Option'
     });
 
-    var firstUrlArg = '/sept_techday_2019/techday.html?option_one=true'
+    var firstUrlArg = '/sept_techday_2019/index.html?option_one=true'
 
     client
         .query({
@@ -54,7 +54,7 @@ Keen.ready(function () {
         title: 'Second Vote Option'
     });
 
-    var secondUrlArg = '/sept_techday_2019/techday.html?option_two=true'
+    var secondUrlArg = '/sept_techday_2019/index.html?option_two=true'
 
     client
         .query({
@@ -89,7 +89,7 @@ Keen.ready(function () {
         title: 'Third Vote Option'
     });
 
-    var thirdUrlArg = '/sept_techday_2019/techday.html?option_three=true'
+    var thirdUrlArg = '/sept_techday_2019/index.html?option_three=true'
 
     client
         .query({
@@ -124,7 +124,7 @@ Keen.ready(function () {
         title: 'Fourth Vote Option'
     });
 
-    var fourthUrlArg = '/sept_techday_2019/techday.html?option_four=true'
+    var fourthUrlArg = '/sept_techday_2019/index.html?option_four=true'
 
     client
         .query({
