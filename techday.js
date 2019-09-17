@@ -193,7 +193,7 @@ Keen.ready(function () {
     client
         .query({
             analysis_type: 'count',
-            event_collection: 'pageviews',
+            event_collection: 'clicks',
             filters: [
                 {
                     "operator": "eq",
