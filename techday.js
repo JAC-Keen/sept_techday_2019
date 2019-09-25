@@ -16,7 +16,7 @@ Keen.ready(function () {
     //------------------
     const voteOne = new KeenDataviz({
         container: '#voteOne', //querySelector
-        title: 'First Vote Option'
+        title: 'Waffle Fries'
     });
 
     var firstUrlArg = '/sept_techday_2019/index.html?option_one=true'
@@ -51,7 +51,7 @@ Keen.ready(function () {
     //-------------------
     const voteTwo = new KeenDataviz({
         container: '#voteTwo', //querySelector
-        title: 'Second Vote Option'
+        title: 'Curly Fries'
     });
 
     var secondUrlArg = '/sept_techday_2019/index.html?option_two=true'
@@ -86,7 +86,7 @@ Keen.ready(function () {
     //------------------
     const voteThree = new KeenDataviz({
         container: '#voteThree',//querySelector
-        title: 'Third Vote Option'
+        title: 'Sweet Potato Fries'
     });
 
     var thirdUrlArg = '/sept_techday_2019/index.html?option_three=true'
@@ -121,7 +121,7 @@ Keen.ready(function () {
     //-------------------
     const voteFour = new KeenDataviz({
         container: '#voteFour',//querySelector
-        title: 'Fourth Vote Option'
+        title: 'Tater Tots'
     });
 
     var fourthUrlArg = '/sept_techday_2019/index.html?option_four=true'
